@@ -1,0 +1,45 @@
+### Test passing data and secrets from caller to reusable workflow
+
+name: Test Reusable Workflow
+
+on:
+  workflow_call:
+    inputs:
+      PANTHEON_ENV:
+        type: string
+        description: 'site.env on Pantheon where we will deploy the code'
+        required: true
+      TARGET_COMPONENT_FOLDER:
+        type: string
+        description: 'directory in the repo on Pantheon that should be replaced with the code being deployed'
+        required: true
+      message:
+        type: string
+        description: 'Message for push to Pantheon\nDefaults to last commit message'
+        required: false
+        default: ''
+    secrets:
+      DEV_DEPLOY_REPO:
+        description: 'ssh url of repo on Pantheon where we will deploy the code'
+        required: true
+
+jobs:
+  verify-data:
+    runs-on: ubuntu-latest
+
+    env:
+      SOURCE_REPO_FOLDER: ./build # where this repo gets checked out
+      TARGET_REPO_FOLDER: ./deploy # where Pantheon's repo gets checked out
+      DEPLOY_REPO: ${{ secrets.DEV_DEPLOY_REPO }} # the ssh url of Pantheon's repo
+      INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_DEPLOY_WEBHOOK }} # the url of the Slack channel to post updates to
+
+    steps:
+      - name: Echo info
+        shell: bash
+        run: |
+          echo "Inputs:"
+          echo "  PANTHEON_ENV: " ${{ inputs.PANTHEON_ENV }}
+          echo "  TARGET_COMPONENT_FOLDER: " ${{ inputs.TARGET_COMPONENT_FOLDER }}
+          echo "  message: " ${{ inputs.message }}
+          echo "Secrets:"
+          echo "  DEV_DEPLOY_REPO: " ${{ secrets.DEV_DEPLOY_REPO }}

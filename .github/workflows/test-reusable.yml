@@ -1,0 +1,21 @@
+### Test passing data and secrets from caller to reusable workflow
+
+name: Test reusing a workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: "Message for push to Pantheon\nDefaults to last commit message"
+        type: string
+        default: ''
+
+jobs:
+  call-workflow:
+    uses: SU-UComm/github-workflows/
+    with:
+      message: message
+      PANTHEON_ENV: stanford-news.dev # the site.env on Pantheon we're deploying to
+      TARGET_COMPONENT_FOLDER: wp-content/themes/news # where in Pantheon's repo this code should go
+    secrets:
+      DEPLOY_REPO: ${{ secrets.DEV_DEPLOY_REPO }} # the ssh url of Pantheon's repo

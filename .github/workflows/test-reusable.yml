@@ -12,7 +12,7 @@ on:
 
 jobs:
   call-workflow:
-    uses: SU-UComm/github-workflows/
+    uses: SU-UComm/github-workflows/.github/workflows/reusable-test
     with:
       message: message
       PANTHEON_ENV: stanford-news.dev # the site.env on Pantheon we're deploying to

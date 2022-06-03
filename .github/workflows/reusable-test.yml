@@ -1,6 +1,6 @@
 ### Test passing data and secrets from caller to reusable workflow
 
-name: Test Reusable Workflow
+name: Reusable workflow
 
 on:
   workflow_call:

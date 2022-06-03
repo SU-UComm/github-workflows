@@ -172,7 +172,6 @@ jobs:
           php-version: '7.4'
 
       - name: Install Terminus
-      - name: Install Terminus
         uses: kopepasah/setup-pantheon-terminus@1.0.0
         with:
           pantheon-machine-token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}

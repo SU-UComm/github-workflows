@@ -1,5 +1,5 @@
 ### Reusable workflow to deploy code to a dev environment on Pantheon
-
+#
 ## Usage:
 # In your source repo, create deploy.yml file like the following:
 #
@@ -22,7 +22,7 @@
 #         message: ${{ github.event.inputs.message }}
 #       secrets:
 #         DEV_DEPLOY_REPO: ${{ secrets.DEV_DEPLOY_REPO }} # the ssh url of Pantheon's repo
-
+#
 # Secrets used:
 # - DEV_DEPLOY_REPO - ssh url of Pantheon's repo - passed from calling script
 #   Starts with ssh://codeserver.dev.

@@ -14,7 +14,7 @@ jobs:
   call-workflow:
     uses: SU-UComm/github-workflows/.github/workflows/reusable-test.yml@master
     with:
-      message: ${{ inputs.message }}
+      message: ${{ github.event.inputs.message }}
       PANTHEON_ENV: stanford-news.dev # the site.env on Pantheon we're deploying to
       TARGET_COMPONENT_FOLDER: wp-content/themes/news # where in Pantheon's repo this code should go
     secrets:

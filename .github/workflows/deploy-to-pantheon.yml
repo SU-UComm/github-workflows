@@ -6,6 +6,9 @@
 #   name: Deploy
 #
 #   on:
+#     push:
+#       branches:
+#         - pantheon
 #     workflow_dispatch:
 #       inputs:
 #         message:
@@ -18,7 +21,7 @@
 #       uses: SU-UComm/github-workflows/.github/workflows/deploy-to-pantheon.yml@master
 #       with:
 #         site: SITE_NAME # the site on Pantheon we're deploying to, e.g. stanford-news
-#         component_folder: PATHf # where in Pantheon's repo this code should go, e.g. wp-content/themes/news
+#         component_folder: PATH # where in Pantheon's repo this code should go, e.g. wp-content/themes/news
 #         message: ${{ github.event.inputs.message }}
 #       secrets:
 #         DEV_DEPLOY_REPO: ${{ secrets.DEV_DEPLOY_REPO }} # the ssh url of Pantheon's repo

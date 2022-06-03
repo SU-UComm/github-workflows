@@ -37,6 +37,11 @@ jobs:
       - name: Echo required info
         shell: bash
         run: |
+          echo "Env:"
+          echo "  SOURCE_REPO_FOLDER: ${{ env.SOURCE_REPO_FOLDER }}"
+          echo "  TARGET_REPO_FOLDER: ${{ env.TARGET_REPO_FOLDER }}"
+          echo "  DEPLOY_REPO: ${{ env.DEPLOY_REPO }}"
+          echo "  INCOMING_WEBHOOK_URL: ${{ env.INCOMING_WEBHOOK_URL }}"
           echo "Secrets:"
           echo "  DEV_DEPLOY_REPO: ${{ secrets.DEV_DEPLOY_REPO }}"
           echo "  PANTHEON_MACHINE_TOKEN: ${{ secrets.PANTHEON_MACHINE_TOKEN }}"

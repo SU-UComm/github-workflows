@@ -1,0 +1,278 @@
+### Reusable workflow to deploy code to a dev environment on Pantheon
+
+## Usage:
+# In your source repo, create deploy.yml file like the following:
+#
+#   name: Deploy
+#
+#   on:
+#     workflow_dispatch:
+#       inputs:
+#         message:
+#           description: "Message for push to Pantheon\nDefaults to last commit message"
+#           type: string
+#           default: ''
+#
+#   jobs:
+#     deploy:
+#       uses: SU-UComm/github-workflows/.github/workflows/deploy-to-pantheon.yml@master
+#       with:
+#         site: SITE_NAME # the site on Pantheon we're deploying to, e.g. stanford-news
+#         component_folder: PATHf # where in Pantheon's repo this code should go, e.g. wp-content/themes/news
+#         message: ${{ github.event.inputs.message }}
+#       secrets:
+#         DEV_DEPLOY_REPO: ${{ secrets.DEV_DEPLOY_REPO }} # the ssh url of Pantheon's repo
+
+# Secrets used:
+# - DEV_DEPLOY_REPO - ssh url of Pantheon's repo - passed from calling script
+#   Starts with ssh://codeserver.dev.
+#   Ends with /~/repository.git
+# - SSH_DEPLOY_PRIVATE_KEY - SSH Private Key allowed to deploy to DEV_DEPLOY_REPO
+#   Starts with -----BEGIN OPENSSH PRIVATE KEY-----
+#   Ends with -----END OPENSSH PRIVATE KEY-----
+# - PANTHEON_MACHINE_TOKEN - Pantheon-generated machine token to allow terminus to
+#   set the dev environment to git mode
+# - SLACK_DEPLOY_WEBHOOK - url for posting status updates to desired Slack channel
+
+name: Deploy to Pantheon
+
+on:
+  workflow_call:
+    inputs:
+      site:
+        type: string
+        description: 'site on Pantheon where we will deploy the code'
+        required: true
+      component_folder:
+        type: string
+        description: 'directory in the repo on Pantheon that should be replaced with the code being deployed'
+        required: true
+      message:
+        type: string
+        description: 'Message for push to Pantheon\nDefaults to last commit message'
+        required: false
+        default: ''
+    secrets:
+      DEV_DEPLOY_REPO:
+        description: 'ssh url of repo on Pantheon where we will deploy the code'
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      SOURCE_REPO_FOLDER: ./build # where this repo gets checked out
+      TARGET_REPO_FOLDER: ./deploy # where Pantheon's repo gets checked out
+      INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_DEPLOY_WEBHOOK }} # the url of the Slack channel to post updates to
+
+    steps:
+      ### Setup
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      - name: Slack notification - start
+        uses: tokorom/action-slack-incoming-webhook@v1.1.4
+        with:
+          blocks: |
+            [
+              {
+                "type": "header",
+                "text": {
+                  "type": "plain_text",
+                  "text": "Deploy to Pantheon"
+                }
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Initiated by*\n${{ github.actor }}"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Initiating event*\n${{ github.event_name }}"
+                  }
+                ]
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Repo*\n${{ github.repository }}"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Branch*\n${{ steps.extract_branch.outputs.branch }}"
+                  }
+                ]
+              }
+            ]
+
+      - name: Checkout source repo (github)
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.SOURCE_REPO_FOLDER }}
+          ref: ${{ github.ref }}
+
+      - name: Get info about last commit
+        id: last_commit
+        shell: bash
+        working-directory: ${{ env.SOURCE_REPO_FOLDER }}
+        run: |
+          echo "##[set-output name=sha;]$( git log -1 --pretty=format:'%h' )"
+          echo "##[set-output name=message;]$( git log -1 --pretty=format:'%s' )"
+
+      ### If no manually entered message, tell Slack about the last commit
+      - name: Slack notification - commit info
+        if: ${{ inputs.message == '' }}
+        uses: tokorom/action-slack-incoming-webhook@v1.1.4
+        with:
+          blocks: |
+            [
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Commit SHA*\n${{ steps.last_commit.outputs.sha }}"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Commit Message*\n${{ steps.last_commit.outputs.message }}"
+                  }
+                ]
+              }
+            ]
+
+      ### If there's a manually entered message, send that to Slack
+      - name: Slack notification - manual message
+        if: ${{ inputs.message != '' }}
+        uses: tokorom/action-slack-incoming-webhook@v1.1.4
+        with:
+          blocks: |
+            [
+              {
+                "type": "section",
+                "text":  {
+                  "type": "mrkdwn",
+                  "text": "*Message*\n${{ inputs.message }}"
+                }
+              }
+            ]
+
+      ### Do the deploy
+      - name: Install PHP
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: '7.4'
+
+      - name: Install Terminus
+      - name: Install Terminus
+        uses: kopepasah/setup-pantheon-terminus@1.0.0
+        with:
+          pantheon-machine-token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
+
+      - name: Set Pantheon environment to git mode
+        run: terminus connection:set ${{ inputs.site }}.dev git
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
+          name: id_rsa # optional
+          known_hosts: codeserver.dev.5dfa8617-1517-4b36-9369-893e98466d05.drush.in
+          config: |
+            Host *.drush.in
+                User git
+                IdentityFile ~/.ssh/id_rsa
+                ForwardAgent yes
+                StrictHostKeyChecking no
+
+      - name: Checkout target repo (Pantheon)
+        run: |
+          git clone ${{ secrets.DEV_DEPLOY_REPO }} ${{ env.TARGET_REPO_FOLDER }}
+          cd ${{ env.TARGET_REPO_FOLDER }}
+          git config user.email "ucomm-devops@stanford.edu"
+          git config user.name "${{ github.actor }}"
+
+      - name: Sync source repo to target repo
+        run: |
+          rsync -rpv --delete ${{ env.SOURCE_REPO_FOLDER }}/ ${{ env.TARGET_REPO_FOLDER }}/${{ inputs.component_folder }} \
+            --exclude=.git \
+            --exclude=.github \
+            --exclude=.gitmodules \
+            --exclude=.gitignore \
+            --exclude=.htaccess \
+            --exclude=.DS_Store \
+            --exclude=.babelrc \
+            --exclude=.editorconfig \
+            --exclude=.eslintrc
+
+      - name: Push target repo to Pantheon
+        working-directory: ${{ env.TARGET_REPO_FOLDER }}
+        run: |
+          echo 'Deploying ${{ steps.extract_branch.outputs.branch }} branch of ${{ github.repository }} repo to Pantheon'
+          git add -Av
+          git commit --allow-empty --allow-empty-message -m '${{ github.event.inputs.message || steps.last_commit.outputs.message }}'
+          git push origin master
+
+      ### Notify Slack
+      - name: Slack - success
+        if: ${{ success() }}
+        uses: tokorom/action-slack-incoming-webhook@v1.1.4
+        continue-on-error: true
+        with:
+          blocks: |
+            [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "*Status*\n:white_check_mark: Success"
+                }
+              },
+              {
+                "type": "divider"
+              }
+            ]
+      - name: Slack - failure
+        if: ${{ failure() }}
+        uses: tokorom/action-slack-incoming-webhook@v1.1.4
+        continue-on-error: true
+        with:
+          blocks: |
+            [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "*Status*\n:x: Failed"
+                }
+              },
+              {
+                "type": "divider"
+              }
+            ]
+      - name: Slack - cancelled
+        if: ${{ cancelled() }}
+        uses: tokorom/action-slack-incoming-webhook@v1.1.4
+        continue-on-error: true
+        with:
+          blocks: |
+            [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "*Status*\n:stop: Cancelled"
+                }
+              },
+              {
+                "type": "divider"
+              }
+            ]

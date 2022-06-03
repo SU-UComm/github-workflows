@@ -5,11 +5,11 @@ name: Reusable workflow
 on:
   workflow_call:
     inputs:
-      PANTHEON_ENV:
+      site:
         type: string
         description: 'site.env on Pantheon where we will deploy the code'
         required: true
-      TARGET_COMPONENT_FOLDER:
+      component_folder:
         type: string
         description: 'directory in the repo on Pantheon that should be replaced with the code being deployed'
         required: true
@@ -48,8 +48,8 @@ jobs:
           echo "  SLACK_DEPLOY_WEBHOOK: ${{ secrets.SLACK_DEPLOY_WEBHOOK }}"
           echo "  SSH_DEPLOY_PRIVATE_KEY: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}"
           echo "Inputs:"
-          echo "  PANTHEON_ENV: ${{ inputs.PANTHEON_ENV }}"
-          echo "  TARGET_COMPONENT_FOLDER: ${{ inputs.TARGET_COMPONENT_FOLDER }}"
+          echo "  site: ${{ inputs.site }}"
+          echo "  component_folder: ${{ inputs.component_folder }}"
 
       - name: Echo empty message
         if: ${{ inputs.message == '' }}

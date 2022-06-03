@@ -15,7 +15,7 @@ jobs:
     uses: SU-UComm/github-workflows/.github/workflows/reusable-test.yml@master
     with:
       message: ${{ github.event.inputs.message }}
-      PANTHEON_ENV: stanford-news.dev # the site.env on Pantheon we're deploying to
-      TARGET_COMPONENT_FOLDER: wp-content/themes/news # where in Pantheon's repo this code should go
+      site: stanford-news # the site on Pantheon we're deploying to
+      component_folder: wp-content/themes/news # where in Pantheon's repo this code should go
     secrets:
       DEV_DEPLOY_REPO: ${{ secrets.DEV_DEPLOY_REPO }} # the ssh url of Pantheon's repo

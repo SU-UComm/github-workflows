@@ -18,4 +18,4 @@ jobs:
       PANTHEON_ENV: stanford-news.dev # the site.env on Pantheon we're deploying to
       TARGET_COMPONENT_FOLDER: wp-content/themes/news # where in Pantheon's repo this code should go
     secrets:
-      DEPLOY_REPO: ${{ secrets.DEV_DEPLOY_REPO }} # the ssh url of Pantheon's repo
+      DEV_DEPLOY_REPO: ${{ secrets.DEV_DEPLOY_REPO }} # the ssh url of Pantheon's repo

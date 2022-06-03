@@ -38,8 +38,8 @@ jobs:
         shell: bash
         run: |
           echo "Inputs:"
-          echo "  PANTHEON_ENV: " ${{ inputs.PANTHEON_ENV }}
-          echo "  TARGET_COMPONENT_FOLDER: " ${{ inputs.TARGET_COMPONENT_FOLDER }}
-          echo "  message: " ${{ inputs.message }}
+          echo "  PANTHEON_ENV: ${{ inputs.PANTHEON_ENV }}"
+          echo "  TARGET_COMPONENT_FOLDER: ${{ inputs.TARGET_COMPONENT_FOLDER }}"
+          echo "  message: ${{ inputs.message }}"
           echo "Secrets:"
-          echo "  DEV_DEPLOY_REPO: " ${{ secrets.DEV_DEPLOY_REPO }}
+          echo "  DEV_DEPLOY_REPO: ${{ secrets.DEV_DEPLOY_REPO }}"

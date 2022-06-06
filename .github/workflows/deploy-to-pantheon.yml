@@ -59,6 +59,15 @@ on:
       DEV_DEPLOY_REPO:
         description: 'ssh url of repo on Pantheon where we will deploy the code'
         required: true
+      SSH_DEPLOY_PRIVATE_KEY:
+        description: 'SSH Private Key allowed to deploy to DEV_DEPLOY_REPO'
+        required: true
+      PANTHEON_MACHINE_TOKEN:
+        description: 'Pantheon-generated machine token to allow terminus to set the dev environment to git mode'
+        required: true
+      SLACK_DEPLOY_WEBHOOK:
+        description: 'url for posting status updates to desired Slack channel'
+        required: true
 
 jobs:
   deploy:

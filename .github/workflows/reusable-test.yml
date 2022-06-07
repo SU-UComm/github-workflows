@@ -66,7 +66,7 @@ jobs:
         run: |
           echo "  Empty DEV_DEPLOY_REPO"
       - name: Non-empty secret - DEV_DEPLOY_REPO
-        if: ${{ secrets.DEV_DEPLOY_REPO == '' }}
+        if: ${{ secrets.DEV_DEPLOY_REPO != '' }}
         shell: bash
         run: |
           echo "  Non-empty DEV_DEPLOY_REPO"
@@ -77,7 +77,7 @@ jobs:
         run: |
           echo "  Empty PANTHEON_MACHINE_TOKEN"
       - name: Non-empty secret - PANTHEON_MACHINE_TOKEN
-        if: ${{ secrets.PANTHEON_MACHINE_TOKEN == '' }}
+        if: ${{ secrets.PANTHEON_MACHINE_TOKEN != '' }}
         shell: bash
         run: |
           echo "  Non-empty PANTHEON_MACHINE_TOKEN"
@@ -88,7 +88,7 @@ jobs:
         run: |
           echo "  Empty SSH_DEPLOY_PRIVATE_KEY"
       - name: Non-empty secret - SSH_DEPLOY_PRIVATE_KEY
-        if: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY == '' }}
+        if: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY != '' }}
         shell: bash
         run: |
           echo "  Non-empty SSH_DEPLOY_PRIVATE_KEY"
@@ -99,7 +99,7 @@ jobs:
         run: |
           echo "  Empty SLACK_DEPLOY_WEBHOOK"
       - name: Non-empty secret - SLACK_DEPLOY_WEBHOOK
-        if: ${{ secrets.SLACK_DEPLOY_WEBHOOK == '' }}
+        if: ${{ secrets.SLACK_DEPLOY_WEBHOOK != '' }}
         shell: bash
         run: |
           echo "  Non-empty SLACK_DEPLOY_WEBHOOK"

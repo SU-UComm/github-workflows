@@ -61,12 +61,12 @@ jobs:
           echo "  message: ${{ inputs.message }}"
 
       - name: Empty secret - DEV_DEPLOY_REPO
-        if: ${{ secrets.DEV_DEPLOY_REPO }} == ''
+        if: secrets.DEV_DEPLOY_REPO == ''
         shell: bash
         run: |
           echo "  Empty DEV_DEPLOY_REPO"
       - name: Non-empty secret - DEV_DEPLOY_REPO
-        if: ${{ secrets.DEV_DEPLOY_REPO }} != ''
+        if: secrets.DEV_DEPLOY_REPO != ''
         shell: bash
         run: |
           echo "  Non-empty DEV_DEPLOY_REPO"

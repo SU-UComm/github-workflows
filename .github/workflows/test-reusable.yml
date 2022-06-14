@@ -13,7 +13,7 @@ on:
 
 jobs:
   call-workflow:
-    uses: ./.github/workflows/reusable-test.yml
+    uses: ./.github/workflows/reusable-test
     with:
       site: stanford-news # the site on Pantheon we're deploying to, e.g. stanford-news
       component_folder: wp-content/themes/news # where in Pantheon's repo this code should go, e.g. wp-content/themes/news

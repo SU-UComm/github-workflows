@@ -40,6 +40,8 @@ jobs:
       SOURCE_REPO_FOLDER: ./build # where this repo gets checked out
       TARGET_REPO_FOLDER: ./deploy # where Pantheon's repo gets checked out
       DEPLOY_REPO: ${{ secrets.DEV_DEPLOY_REPO }} # the ssh url of Pantheon's repo
+      PANTHEON_MACHINE_TOKEN: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
+      SSH_DEPLOY_PRIVATE_KEY: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
       INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_DEPLOY_WEBHOOK }} # the url of the Slack channel to post updates to
 
     steps:
@@ -71,35 +73,35 @@ jobs:
         run: |
           echo "  Non-empty DEV_DEPLOY_REPO"
 
-      # - name: Empty secret - PANTHEON_MACHINE_TOKEN
-      #   if: secrets.PANTHEON_MACHINE_TOKEN == ''
-      #   shell: bash
-      #   run: |
-      #     echo "  Empty PANTHEON_MACHINE_TOKEN"
-      # - name: Non-empty secret - PANTHEON_MACHINE_TOKEN
-      #   if: secrets.PANTHEON_MACHINE_TOKEN != ''
-      #   shell: bash
-      #   run: |
-      #     echo "  Non-empty PANTHEON_MACHINE_TOKEN"
+      - name: Empty secret - PANTHEON_MACHINE_TOKEN
+        if: ${{ env.PANTHEON_MACHINE_TOKEN }} == ''
+        shell: bash
+        run: |
+          echo "  Empty PANTHEON_MACHINE_TOKEN"
+      - name: Non-empty secret - PANTHEON_MACHINE_TOKEN
+        if: ${{ env.PANTHEON_MACHINE_TOKEN }} != ''
+        shell: bash
+        run: |
+          echo "  Non-empty PANTHEON_MACHINE_TOKEN"
 
-      # - name: Empty secret - SSH_DEPLOY_PRIVATE_KEY
-      #   if: secrets.SSH_DEPLOY_PRIVATE_KEY == ''
-      #   shell: bash
-      #   run: |
-      #     echo "  Empty SSH_DEPLOY_PRIVATE_KEY"
-      # - name: Non-empty secret - SSH_DEPLOY_PRIVATE_KEY
-      #   if: secrets.SSH_DEPLOY_PRIVATE_KEY != ''
-      #   shell: bash
-      #   run: |
-      #     echo "  Non-empty SSH_DEPLOY_PRIVATE_KEY"
+      - name: Empty secret - SSH_DEPLOY_PRIVATE_KEY
+        if: ${{ env.SSH_DEPLOY_PRIVATE_KEY }} == ''
+        shell: bash
+        run: |
+          echo "  Empty SSH_DEPLOY_PRIVATE_KEY"
+      - name: Non-empty secret - SSH_DEPLOY_PRIVATE_KEY
+        if: ${{ env.SSH_DEPLOY_PRIVATE_KEY }} != ''
+        shell: bash
+        run: |
+          echo "  Non-empty SSH_DEPLOY_PRIVATE_KEY"
 
-      # - name: Empty secret - SLACK_DEPLOY_WEBHOOK
-      #   if: secrets.SLACK_DEPLOY_WEBHOOK == ''
-      #   shell: bash
-      #   run: |
-      #     echo "  Empty SLACK_DEPLOY_WEBHOOK"
-      # - name: Non-empty secret - SLACK_DEPLOY_WEBHOOK
-      #   if: secrets.SLACK_DEPLOY_WEBHOOK != ''
-      #   shell: bash
-      #   run: |
-      #     echo "  Non-empty SLACK_DEPLOY_WEBHOOK"
+      - name: Empty secret - SLACK_DEPLOY_WEBHOOK
+        if: ${{ env.INCOMING_WEBHOOK_URL }} == ''
+        shell: bash
+        run: |
+          echo "  Empty SLACK_DEPLOY_WEBHOOK"
+      - name: Non-empty secret - SLACK_DEPLOY_WEBHOOK
+        if: ${{ env.INCOMING_WEBHOOK_URL }} != ''
+        shell: bash
+        run: |
+          echo "  Non-empty SLACK_DEPLOY_WEBHOOK"

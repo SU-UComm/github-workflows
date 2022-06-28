@@ -62,7 +62,7 @@ jobs:
     env:
       SOURCE_REPO_FOLDER: ./build # where this repo gets checked out
       TARGET_REPO_FOLDER: ./deploy # where Pantheon's repo gets checked out
-      DEPLOY_REPO: ${{ secrets.DEV_DEPLOY_REPO }} # the ssh url of Pantheon's repo
+      DEV_DEPLOY_REPO: ${{ secrets.DEV_DEPLOY_REPO }} # the ssh url of Pantheon's repo
       PANTHEON_MACHINE_TOKEN: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
       SSH_DEPLOY_PRIVATE_KEY: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
       INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_DEPLOY_WEBHOOK }} # name required by tokorom's action

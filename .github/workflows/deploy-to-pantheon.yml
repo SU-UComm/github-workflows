@@ -30,12 +30,12 @@
 # - DEV_DEPLOY_REPO - ssh url of Pantheon's repo - passed from calling script
 #   Starts with ssh://codeserver.dev.
 #   Ends with /~/repository.git
-# - SSH_DEPLOY_PRIVATE_KEY - SSH Private Key allowed to deploy to DEV_DEPLOY_REPO
+# - SSH_DEPLOY_PRIVATE_KEY - organization secret: SSH Private Key allowed to deploy to DEV_DEPLOY_REPO
 #   Starts with -----BEGIN OPENSSH PRIVATE KEY-----
 #   Ends with -----END OPENSSH PRIVATE KEY-----
-# - PANTHEON_MACHINE_TOKEN - Pantheon-generated machine token to allow terminus to
+# - PANTHEON_MACHINE_TOKEN - organization secret: Pantheon-generated machine token to allow terminus to
 #   set the dev environment to git mode
-# - SLACK_DEPLOY_WEBHOOK - url for posting status updates to desired Slack channel
+# - SLACK_DEPLOY_WEBHOOK - organization secret: url for posting status updates to desired Slack channel
 
 name: Deploy to Pantheon
 
@@ -76,6 +76,9 @@ jobs:
     env:
       SOURCE_REPO_FOLDER: ./build # where this repo gets checked out
       TARGET_REPO_FOLDER: ./deploy # where Pantheon's repo gets checked out
+      DEPLOY_REPO: ${{ secrets.DEV_DEPLOY_REPO }} # the ssh url of Pantheon's repo
+      PANTHEON_MACHINE_TOKEN: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
+      SSH_DEPLOY_PRIVATE_KEY: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
       INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_DEPLOY_WEBHOOK }} # the url of the Slack channel to post updates to
 
     steps:
@@ -186,7 +189,7 @@ jobs:
       - name: Install Terminus
         uses: kopepasah/setup-pantheon-terminus@1.0.0
         with:
-          pantheon-machine-token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
+          pantheon-machine-token: ${{ env.PANTHEON_MACHINE_TOKEN }}
 
       - name: Set Pantheon environment to git mode
         run: terminus connection:set ${{ inputs.site }}.dev git
@@ -194,7 +197,7 @@ jobs:
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
+          key: ${{ env.SSH_DEPLOY_PRIVATE_KEY }}
           name: id_rsa # optional
           known_hosts: codeserver.dev.5dfa8617-1517-4b36-9369-893e98466d05.drush.in
           config: |
@@ -206,7 +209,7 @@ jobs:
 
       - name: Checkout target repo (Pantheon)
         run: |
-          git clone ${{ secrets.DEV_DEPLOY_REPO }} ${{ env.TARGET_REPO_FOLDER }}
+          git clone ${{ env.DEV_DEPLOY_REPO }} ${{ env.TARGET_REPO_FOLDER }}
           cd ${{ env.TARGET_REPO_FOLDER }}
           git config user.email "ucomm-devops@stanford.edu"
           git config user.name "${{ github.actor }}"

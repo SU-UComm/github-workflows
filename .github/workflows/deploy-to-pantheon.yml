@@ -178,7 +178,7 @@ jobs:
           pantheon-machine-token: ${{ env.PANTHEON_MACHINE_TOKEN }}
 
       - name: Set Pantheon environment to git mode
-        run: terminus connection:set ${{ inputs.site }}.dev git
+        run: terminus connection:set ${{ inputs.site }}.dev git --yes
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2

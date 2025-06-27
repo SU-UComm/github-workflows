@@ -170,7 +170,7 @@ jobs:
       - name: Install PHP
         uses: shivammathur/setup-php@master
         with:
-          php-version: '7.4'
+          php-version: '8.2'
 
       - name: Install Terminus
         uses: kopepasah/setup-pantheon-terminus@1.0.0

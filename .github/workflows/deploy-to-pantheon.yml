@@ -173,7 +173,7 @@ jobs:
           php-version: '8.2'
 
       - name: Install Terminus
-        uses: kopepasah/setup-pantheon-terminus@1.0.0
+        uses: pantheon-systems/terminus-github-actions@v1
         with:
           pantheon-machine-token: ${{ env.PANTHEON_MACHINE_TOKEN }}
 
